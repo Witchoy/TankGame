@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Projectiles
 {
     // Ensures the GameObject has a VFX
-    [RequireComponent(typeof(GameObject))]
+    [RequireComponent(typeof(Collider))]
     public class ShellController : MonoBehaviour
     {
         [Header("VFX Component")]
@@ -11,7 +11,9 @@ namespace Projectiles
 
         void OnCollisionEnter(Collision collision)
         {
-            Instantiate(m_vfxExplosion, transform.position, transform.rotation);
+            // Calculate the rotation opposed to the shell's facing direction
+            Quaternion opposedRotation = Quaternion.LookRotation(collision.transform.forward, collision.transform.up);
+            Instantiate(m_vfxExplosion, transform.position, opposedRotation);
             Destroy(gameObject);
         }
     }

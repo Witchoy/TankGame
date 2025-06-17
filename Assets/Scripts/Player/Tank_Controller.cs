@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Player
@@ -14,9 +15,13 @@ namespace Player
         [SerializeField] private float m_tankMovementSpeed = 12.5f;
         [SerializeField] private float m_tankRotationSpeed = 100f;
 
-        [Header("GameObject")]
+        [Header("Fire Settings")]
         [SerializeField] private GameObject m_projectile;
         [SerializeField] private float m_launchVelocity = 500f;
+        [SerializeField] private float m_reloadTime = 1.0f;
+
+        private bool m_isReloading = false;
+        private bool m_canShoot = true;
 
         void Start()
         {
@@ -34,7 +39,11 @@ namespace Player
         // Called once per frame (used for inputs like firing)
         void Update()
         {
-            HandleFireShell();
+            if (m_inputs.GetFireInput() && !m_isReloading)
+            {
+                HandleFireShell();
+                StartCoroutine(Reload());
+            }
         }
 
         // Called at a fixed interval (used for physics-based movement)
@@ -61,21 +70,29 @@ namespace Player
         // Handles firing the projectile
         protected void HandleFireShell()
         {
-            if (m_inputs.GetFireInput())
-            {
-                // Offset the spawn position slightly in front and at the tank's cannon height
-                Vector3 spawnOffset = transform.forward * 4f + Vector3.up * 3f;
-                Vector3 spawnPosition = transform.position + spawnOffset;
+            // Offset the spawn position slightly in front and at the tank's cannon height
+            Vector3 spawnOffset = transform.forward * 4f + Vector3.up * 3f;
+            Vector3 spawnPosition = transform.position + spawnOffset;
 
-                // Adjust rotation so the projectile faces forward correctly
-                Quaternion spownRotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
+            // Adjust rotation so the projectile faces forward correctly
+            Quaternion spownRotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
 
-                // Spawn the projectile at the given position and rotation
-                GameObject projectile = Instantiate(m_projectile, spawnPosition, spownRotation);
+            // Spawn the projectile at the given position and rotation
+            GameObject projectile = Instantiate(m_projectile, spawnPosition, spownRotation);
 
-                // Apply velocity to the projectile in the tank's forward direction
-                projectile.GetComponent<Rigidbody>().linearVelocity = transform.forward * m_launchVelocity;
-            }
+            // Apply velocity to the projectile in the tank's forward direction
+            projectile.GetComponent<Rigidbody>().linearVelocity = transform.forward * m_launchVelocity;
+        }
+
+        IEnumerator Reload()
+        {
+            m_isReloading = true;
+            m_canShoot = false;
+
+            yield return new WaitForSeconds(m_reloadTime);
+
+            m_canShoot = true;
+            m_isReloading = false;
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Player
             m_fireInput = Input.GetMouseButtonDown(0); // Left Click
         }
 
-
         // Returns the forward movement input
         public float GetForwardInput()
         {
@@ -34,6 +33,7 @@ namespace Player
         {
             return m_rotationInput;
         }
+
         // Returns the fire input
         public bool GetFireInput()
         {
