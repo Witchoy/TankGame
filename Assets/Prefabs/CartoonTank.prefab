@@ -134,10 +134,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3773845870573250940}
-  - component: {fileID: 7672575303284182663}
-  - component: {fileID: 426179455291190267}
+  - component: {fileID: 7180509850189420059}
+  - component: {fileID: 7870975050577445999}
   - component: {fileID: 6540493077308167780}
   - component: {fileID: 6186314471218012623}
+  - component: {fileID: -1843001440357243844}
   m_Layer: 0
   m_Name: CartoonTank
   m_TagString: Untagged
@@ -162,7 +163,7 @@ Transform:
   - {fileID: 4336773896399935524}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 37.959, z: 0}
---- !u!114 &7672575303284182663
+--- !u!114 &7180509850189420059
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -174,7 +175,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9b95af6b2978e84fa6c1efdc78c0210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &426179455291190267
+  m_moveAction: {fileID: 6493145624499734005, guid: 2062ff468612e7646a4b0432a1114b63, type: 3}
+--- !u!114 &7870975050577445999
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -189,7 +191,8 @@ MonoBehaviour:
   m_tankMovementSpeed: 12.5
   m_tankRotationSpeed: 100
   m_projectile: {fileID: 6543659710814241668, guid: e5eb02cc23fd62c4682e5450a075f0bf, type: 3}
-  m_launchVelocity: 100
+  m_launchVelocity: 500
+  m_reloadTime: 1
 --- !u!54 &6540493077308167780
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -238,6 +241,36 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2, y: 2, z: 2.5}
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &-1843001440357243844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4545456383661159366}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: 2062ff468612e7646a4b0432a1114b63, type: 3}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Gameplay
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &4799007202235173663
 GameObject:
   m_ObjectHideFlags: 0

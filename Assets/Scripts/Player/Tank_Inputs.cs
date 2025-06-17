@@ -1,25 +1,46 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Player
 {
     public class Tank_Inputs : MonoBehaviour
     {
+        public InputActionReference m_moveAction;
+        public InputActionReference m_rotateAction;
+        public InputActionReference m_fireAction;
+
         private float m_forwardInput;   // Forward/backward movement input
         private float m_rotationInput;  // Left/right rotation input
-        private bool m_fireInput;
+        private bool m_fireInput; // Fire input
 
         void Update()
         {
             HandleInputs();
+            HandlePrintInput();
+        }
+        
+        private void HandlePrintInput()
+        {
+            if (Keyboard.current != null)
+            {
+                foreach (var keyControl in Keyboard.current.allKeys)
+                {
+                    if (keyControl.wasPressedThisFrame)
+                    {
+                        Debug.Log($"Key pressed: {keyControl.displayName}");
+                    }
+                }
+            }
         }
 
         // Handles player input each frame
         protected void HandleInputs()
         {
             // Get player input from keyboard
-            m_forwardInput = Input.GetAxis("Vertical");   // W/S or Up/Down arrow keys
-            m_rotationInput = Input.GetAxis("Horizontal"); // A/D or Left/Right arrow keys
-            m_fireInput = Input.GetMouseButtonDown(0); // Left Click
+            m_forwardInput = m_moveAction.action.ReadValue<float>();
+            m_rotationInput = m_rotateAction.action.ReadValue<float>();
+            m_fireInput = m_fireAction.action.IsPressed();
         }
 
         // Returns the forward movement input

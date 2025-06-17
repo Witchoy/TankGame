@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2062ff468612e7646a4b0432a1114b63
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 8404be70184654265930450def6a9037, type: 3}
+  generateWrapperCode: 0
+  wrapperCodePath: Assets/Scripts/New_Inputs_System/TankControls.cs
+  wrapperClassName: 
+  wrapperCodeNamespace: 

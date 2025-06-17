@@ -934,6 +934,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: CartoonTank
       objectReference: {fileID: 0}
+    - target: {fileID: 7180509850189420059, guid: 11be9918f1350164a8a80091098043dd, type: 3}
+      propertyPath: m_fireAction
+      value: 
+      objectReference: {fileID: -8768847272953776361, guid: 2062ff468612e7646a4b0432a1114b63, type: 3}
+    - target: {fileID: 7180509850189420059, guid: 11be9918f1350164a8a80091098043dd, type: 3}
+      propertyPath: m_moveAction
+      value: 
+      objectReference: {fileID: -3405007940649699061, guid: 2062ff468612e7646a4b0432a1114b63, type: 3}
+    - target: {fileID: 7180509850189420059, guid: 11be9918f1350164a8a80091098043dd, type: 3}
+      propertyPath: m_rotateAction
+      value: 
+      objectReference: {fileID: 7385347024502545537, guid: 2062ff468612e7646a4b0432a1114b63, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
