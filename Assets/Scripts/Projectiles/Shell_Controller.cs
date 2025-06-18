@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Projectiles
+namespace Assets.Scripts.Projectiles
 {
     // Ensures the GameObject has a VFX
     [RequireComponent(typeof(Collider))]
@@ -11,8 +11,14 @@ namespace Projectiles
 
         void OnCollisionEnter(Collision collision)
         {
+            Debug.Log("j'ai hit : " + collision.GetType());
+            if (collision.gameObject.CompareTag("DestructibleWall"))
+            {
+                Debug.Log("Il avait le tag mur destructibles !");
+                collision.gameObject.GetComponent<Destructible_Wall>().SetToBroken();
+            }
             // Calculate the rotation opposed to the shell's facing direction
-            Quaternion opposedRotation = Quaternion.LookRotation(collision.transform.forward, collision.transform.up);
+            Quaternion opposedRotation = Quaternion.LookRotation(-transform.forward, transform.up);
             Instantiate(m_vfxExplosion, transform.position, opposedRotation);
             Destroy(gameObject);
         }

@@ -52,19 +52,29 @@ namespace Player
             HandleMovement();
         }
 
-        // Handles tank movement and rotation
+        // Handles tank movement and rotation with realistic controls
         protected void HandleMovement()
         {
             float delta = Time.fixedDeltaTime;
 
-            // Move the tank forward/backward based on input
-            Vector3 movement = m_rigidbody.position + transform.forward * m_inputs.GetForwardInput() * m_tankMovementSpeed * delta;
-            m_rigidbody.MovePosition(movement);
+            // Get input values
+            float forwardInput = m_inputs.GetForwardInput();
+            float rotationInput = m_inputs.GetRotationInput();
 
-            // Rotate the tank based on input
-            float rotationAmount = m_tankRotationSpeed * m_inputs.GetRotationInput() * delta;
-            Quaternion rotation = Quaternion.Euler(0f, rotationAmount, 0f);
-            m_rigidbody.MoveRotation(m_rigidbody.rotation * rotation);
+            // Only move forward/backward in the tank's facing direction
+            if (Mathf.Abs(forwardInput) > 0.1f)
+            {
+                Vector3 movement = m_rigidbody.position + transform.forward * forwardInput * m_tankMovementSpeed * delta;
+                m_rigidbody.MovePosition(movement);
+            }
+
+            // Rotate the tank left/right (this changes which direction is "forward")
+            if (Mathf.Abs(rotationInput) > 0.1f)
+            {
+                float rotationAmount = m_tankRotationSpeed * rotationInput * delta;
+                Quaternion rotation = Quaternion.Euler(0f, rotationAmount, 0f);
+                m_rigidbody.MoveRotation(m_rigidbody.rotation * rotation);
+            }
         }
 
         // Handles firing the projectile
