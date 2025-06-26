@@ -3,25 +3,25 @@ using UnityEngine;
 
 namespace Player
 {
-    // Ensures the GameObject has a Rigidbody and Tank_Inputs component
+    // Ensures the GameObject has a Rigidbody and Tank_Inputs and Tank_Stats component
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Tank_Inputs))]
+    [RequireComponent(typeof(Tank_Stats))]
     public class Tank_Controller : MonoBehaviour
     {
         private Rigidbody m_rigidbody;
         private Tank_Inputs m_inputs;
 
         [Header("Movement Settings")]
-        [SerializeField] private float m_tankMovementSpeed = 12.5f;
-        [SerializeField] private float m_tankRotationSpeed = 100f;
+        [SerializeField] protected float m_tankMovementSpeed = 100000f;
+        [SerializeField] protected float m_tankRotationSpeed = 100f;
 
         [Header("Fire Settings")]
         [SerializeField] private GameObject m_projectile;
-        [SerializeField] private float m_launchVelocity = 500f;
-        [SerializeField] private float m_reloadTime = 1.0f;
+        [SerializeField] protected float m_launchVelocity = 500f;
+        [SerializeField] protected float m_reloadTime = 1.0f;
 
         private bool m_isReloading = false;
-        private bool m_canShoot = true;
 
         void Start()
         {
@@ -49,33 +49,41 @@ namespace Player
         // Called at a fixed interval (used for physics-based movement)
         void FixedUpdate()
         {
-            HandleMovement();
+            HandleMovementWithPosition();
         }
 
-        // Handles tank movement and rotation with realistic controls
-        protected void HandleMovement()
+        protected void HandleMovementWithPosition()
         {
             float delta = Time.fixedDeltaTime;
 
-            // Get input values
-            float forwardInput = m_inputs.GetForwardInput();
-            float rotationInput = m_inputs.GetRotationInput();
+            Vector3 newPos = transform.position + (transform.forward * m_inputs.GetForwardInput() * m_tankMovementSpeed * delta);
+            m_rigidbody.MovePosition(newPos);
 
-            // Only move forward/backward in the tank's facing direction
+            Quaternion newRot = transform.rotation * Quaternion.Euler(Vector3.up * (m_tankRotationSpeed * m_inputs.GetRotationInput() * delta));
+            m_rigidbody.MoveRotation(newRot);
+        }
+
+        // Handles tank movement and rotation
+        protected void HandleMovementWithForce()
+        {
+            // Forward/backward movement
+            float forwardInput = m_inputs.GetForwardInput();
             if (Mathf.Abs(forwardInput) > 0.1f)
             {
-                Vector3 movement = m_rigidbody.position + transform.forward * forwardInput * m_tankMovementSpeed * delta;
-                m_rigidbody.MovePosition(movement);
+                Vector3 force = transform.forward * forwardInput * m_tankMovementSpeed;
+                m_rigidbody.AddForce(force, ForceMode.Force);
             }
 
-            // Rotate the tank left/right (this changes which direction is "forward")
+            // Tank rotation with torque
+            float rotationInput = m_inputs.GetRotationInput();
             if (Mathf.Abs(rotationInput) > 0.1f)
             {
-                float rotationAmount = m_tankRotationSpeed * rotationInput * delta;
-                Quaternion rotation = Quaternion.Euler(0f, rotationAmount, 0f);
-                m_rigidbody.MoveRotation(m_rigidbody.rotation * rotation);
+                float torqueAmount = rotationInput * m_tankRotationSpeed;
+                Vector3 torque = Vector3.up * torqueAmount;
+                m_rigidbody.AddTorque(torque, ForceMode.Force);
             }
         }
+
 
         // Handles firing the projectile
         protected void HandleFireShell()
@@ -97,12 +105,25 @@ namespace Player
         IEnumerator Reload()
         {
             m_isReloading = true;
-            m_canShoot = false;
 
             yield return new WaitForSeconds(m_reloadTime);
 
-            m_canShoot = true;
             m_isReloading = false;
         }
+
+        // Check if the tank wheels are on the ground
+        private bool IsGrounded()
+        {
+            float checkDistance = 1f;
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitinfo, checkDistance))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
     }
 }
