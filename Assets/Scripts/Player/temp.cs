@@ -7,14 +7,15 @@ namespace Player
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(Tank_Inputs))]
     [RequireComponent(typeof(Tank_Stats))]
-    public class TankController : MonoBehaviour
+    public class Temp : MonoBehaviour
     {
         private Rigidbody m_rigidbody;
+        private CharacterController m_controller;
         private Tank_Inputs m_inputs;
 
         [Header("Movement Settings")]
-        [SerializeField] protected float m_tankMovementSpeed = 10f;
-        [SerializeField] protected float m_tankRotationSpeed = 90f;
+        [SerializeField] protected float m_tankMovementSpeed = 100000f;
+        [SerializeField] protected float m_tankRotationSpeed = 100f;
 
         [Header("Fire Settings")]
         [SerializeField] private GameObject m_projectile;
@@ -22,11 +23,13 @@ namespace Player
         [SerializeField] protected float m_reloadTime = 1.0f;
 
         private bool m_isReloading = false;
+        private Vector3 m_playerVelocity;
 
         void Start()
         {
             m_rigidbody = GetComponent<Rigidbody>();
             m_inputs = GetComponent<Tank_Inputs>();
+            m_controller = GetComponent<CharacterController>();
 
             // Warn if no projectile prefab is assigned
             if (m_projectile == null)
@@ -39,6 +42,18 @@ namespace Player
         // Called once per frame (used for inputs like firing)
         void Update()
         {
+            // Horizontal input
+            Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            move = Vector3.ClampMagnitude(move, 1f); // Optional: prevents faster diagonal movement
+
+            if (move != Vector3.zero)
+            {
+                transform.forward = move;
+            }
+
+            // Combine horizontal and vertical movement
+            Vector3 finalMove = (move * m_tankMovementSpeed) + (m_playerVelocity.y * Vector3.up);
+            m_controller.Move(finalMove * Time.deltaTime);
 
             if (m_inputs.GetFireInput() && !m_isReloading)
             {
@@ -65,25 +80,25 @@ namespace Player
         }
 
         // Handles tank movement and rotation
-        // protected void HandleMovementWithForce()
-        // {
-        //     Forward/backward movement
-        //     float forwardInput = m_inputs.GetForwardInput();
-        //     if (Mathf.Abs(forwardInput) > 0.1f)
-        //     {
-        //         Vector3 force = transform.forward * forwardInput * m_tankMovementSpeed;
-        //         m_rigidbody.AddForce(force, ForceMode.Force);
-        //     }
+        protected void HandleMovementWithForce()
+        {
+            // Forward/backward movement
+            float forwardInput = m_inputs.GetForwardInput();
+            if (Mathf.Abs(forwardInput) > 0.1f)
+            {
+                Vector3 force = transform.forward * forwardInput * m_tankMovementSpeed;
+                m_rigidbody.AddForce(force, ForceMode.Force);
+            }
 
-        //     Tank rotation with torque
-        //     float rotationInput = m_inputs.GetRotationInput();
-        //     if (Mathf.Abs(rotationInput) > 0.1f)
-        //     {
-        //         float torqueAmount = rotationInput * m_tankRotationSpeed;
-        //         Vector3 torque = Vector3.up * torqueAmount;
-        //         m_rigidbody.AddTorque(torque, ForceMode.Force);
-        //     }
-        // }
+            // Tank rotation with torque
+            float rotationInput = m_inputs.GetRotationInput();
+            if (Mathf.Abs(rotationInput) > 0.1f)
+            {
+                float torqueAmount = rotationInput * m_tankRotationSpeed;
+                Vector3 torque = Vector3.up * torqueAmount;
+                m_rigidbody.AddTorque(torque, ForceMode.Force);
+            }
+        }
 
 
         // Handles firing the projectile
@@ -94,10 +109,10 @@ namespace Player
             Vector3 spawnPosition = transform.position + spawnOffset;
 
             // Adjust rotation so the projectile faces forward correctly
-            Quaternion spawnRotation = Quaternion.LookRotation(transform.forward);
+            Quaternion spownRotation = Quaternion.Euler(90, transform.eulerAngles.y, transform.eulerAngles.z);
 
             // Spawn the projectile at the given position and rotation
-            GameObject projectile = Instantiate(m_projectile, spawnPosition, spawnRotation);
+            GameObject projectile = Instantiate(m_projectile, spawnPosition, spownRotation);
 
             // Apply velocity to the projectile in the tank's forward direction
             projectile.GetComponent<Rigidbody>().linearVelocity = transform.forward * m_launchVelocity;
@@ -110,6 +125,20 @@ namespace Player
             yield return new WaitForSeconds(m_reloadTime);
 
             m_isReloading = false;
+        }
+
+        // Check if the tank wheels are on the ground
+        private bool IsGrounded()
+        {
+            float checkDistance = 1f;
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitinfo, checkDistance))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }
